@@ -21,14 +21,20 @@ $| = 1;
 foreach my $ori_file (@ori_files) {
     $o_count++;
     my $percent = processPer(scalar @ori_files, $o_count);
+    print "\r", " " x 60, "\r", " " x 52, $percent;
+    print "\r[", " " x 50, "]";
+    print "\r[";
     my $o_file = $ORI_PATH.$ori_file;
     my $o_file_size = -s $o_file;
 
     my $p_count = 0;
+    my $p_bar = 0;
     foreach my $pre_file (@pre_files) {
         $p_count++;
-        my $bar = processBar(scalar @pre_files, $p_count);
-        print "\r", " " x 60, "\r", $bar, $percent;
+        if ($p_bar + 1 == int($p_count / scalar(@pre_files) * 50)) {
+            print "|";
+            $p_bar++;
+        }
         my $p_file = $PRE_PATH.$pre_file;
         next if $p_file eq $o_file;
         my $p_file_size = -s $p_file;
@@ -97,13 +103,3 @@ sub processPer {
     return $per;
 }
 
-sub processBar {
-    my $total = shift;
-    my $count = shift;
-    my $LENGTH = 50;
-
-    my $barcount = int($count / $total * 50);
-    my $bar = "|" x $barcount;
-    $bar .= " " x (50 - $barcount);
-    return "[$bar]";
-}
