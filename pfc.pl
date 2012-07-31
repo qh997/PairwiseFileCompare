@@ -40,9 +40,9 @@ foreach my $ori_file (@ori_files) {
         my $p_file_size = -s $p_file;
 
         if ($o_file_size and $p_file_size and $o_file_size == $p_file_size) {
-            my $o_file_hash = `cat $o_file 2>/dev/null | sha1sum`;
+            my $o_file_hash = `cat "$o_file" 2>/dev/null | sha1sum`;
             $o_file_hash =~ s/\s.*//s;
-            my $p_file_hash = `cat $p_file 2>/dev/null | sha1sum`;
+            my $p_file_hash = `cat "$p_file" 2>/dev/null | sha1sum`;
             $p_file_hash =~ s/\s.*//s;
 
             if ($o_file_hash eq $p_file_hash) {
