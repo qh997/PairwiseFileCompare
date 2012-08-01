@@ -6,10 +6,12 @@ use Cwd;
 use Getopt::Long;
 use 5.010;
 
+my $HASH = 0;
 my $DEBUG = 0;
 
 GetOptions (
-    'debug'  => \$DEBUG,
+    'h|hash' => \$HASH,
+    'debug' => \$DEBUG,
 );
 
 my @paths;
@@ -34,6 +36,7 @@ foreach my $path (@paths) {
 }
 
 foreach my $file_hash (keys %hash_files) {
+    print "$file_hash" if $HASH && @{$hash_files{$file_hash}} > 1;
     print join("\n", (@{$hash_files{$file_hash}}))."\n\n" if @{$hash_files{$file_hash}} > 1;
 }
 

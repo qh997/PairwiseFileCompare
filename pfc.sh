@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function init {
-    ARGS=$(getopt -o d --long debug: -n "$0" -- "$@")
+    ARGS=$(getopt -o hd --long debug --long hash -n "$0" -- "$@")
     if [ $? != 0 ]; then
         exit 1
     fi
@@ -9,6 +9,7 @@ function init {
 
     while true ; do
         case "$1" in
+            -h|--hash) HASH=1; shift;;
             -d) : ${DEBUG:=1}; shift;;
             --debug) DEBUG=$2; shift 2;;
             --) shift; break;;
@@ -83,6 +84,10 @@ for ((i=0; i<${#files[*]}; i++)); do
 
             if [[ $lf_hash == $rf_hash ]]; then
                 if [[ -z $frist ]]; then
+                    if [[ -n $HASH ]]; then
+                        echo $lf_hash
+                    fi
+
                     echo $left_file
                     frist=1
                 fi
