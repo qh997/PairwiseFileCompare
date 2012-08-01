@@ -2,8 +2,15 @@
 
 use strict;
 use warnings;
-use 5.010;
 use Cwd;
+use Getopt::Long;
+use 5.010;
+
+my $DEBUG = 0;
+
+GetOptions (
+    'debug'  => \$DEBUG,
+);
 
 my $ORI_PATH = @ARGV ? shift @ARGV : getcwd;
 my $PRE_PATH = @ARGV ? shift @ARGV : $ORI_PATH;
