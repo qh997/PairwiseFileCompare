@@ -72,12 +72,3 @@ sub file_list {
 
     @file_list;
 }
-
-sub processPer {
-    my $total = shift;
-    my $count = shift;
-
-    my $per = sprintf " %5.2f%%", $count/$total*100;
-    return $per;
-}
-
