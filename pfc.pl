@@ -12,58 +12,29 @@ GetOptions (
     'debug'  => \$DEBUG,
 );
 
-my $ORI_PATH = @ARGV ? shift @ARGV : getcwd;
-my $PRE_PATH = @ARGV ? shift @ARGV : $ORI_PATH;
-$ORI_PATH =~ s{(?<!/)$}{/};
-$PRE_PATH =~ s{(?<!/)$}{/};
-
-my @ori_files = file_list($ORI_PATH);
-my @pre_files = $ORI_PATH eq $PRE_PATH ? @ori_files : file_list($PRE_PATH);
-
-print "Compare ".@ori_files." files to ".@pre_files." files.\n";
-
-my %same_files;
-my $o_count = 0;
-$| = 1;
-foreach my $ori_file (@ori_files) {
-    $o_count++;
-    my $percent = processPer(scalar @ori_files, $o_count);
-    print "\r", " " x 60, "\r", " " x 52, $percent;
-    print "\r[", " " x 50, "]";
-    print "\r[";
-    my $o_file = $ORI_PATH.$ori_file;
-    my $o_file_size = -s $o_file;
-
-    my $p_count = 0;
-    my $p_bar = 0;
-    foreach my $pre_file (@pre_files) {
-        $p_count++;
-        if ($p_bar + 1 == int($p_count / scalar(@pre_files) * 50)) {
-            print "|";
-            $p_bar++;
-        }
-        my $p_file = $PRE_PATH.$pre_file;
-        next if $p_file eq $o_file;
-        my $p_file_size = -s $p_file;
-
-        if ($o_file_size and $p_file_size and $o_file_size == $p_file_size) {
-            my $o_file_hash = `cat "$o_file" 2>/dev/null | sha1sum`;
-            $o_file_hash =~ s/\s.*//s;
-            my $p_file_hash = `cat "$p_file" 2>/dev/null | sha1sum`;
-            $p_file_hash =~ s/\s.*//s;
-
-            if ($o_file_hash eq $p_file_hash) {
-                push @{$same_files{$o_file_hash}}, $o_file unless grep($_ eq $o_file, @{$same_files{$o_file_hash}});
-                push @{$same_files{$o_file_hash}}, $p_file unless grep($_ eq $p_file, @{$same_files{$o_file_hash}});
-            }
+my @paths;
+if (@ARGV) {
+    foreach my $input_path (@ARGV) {
+        if (-d $input_path) {
+            $input_path =~ s{(?<!/)$}{/};
+            push @paths, $input_path;
         }
     }
 }
-print "\n";
-$| = 0;
+else {
+    push @paths, getcwd().'/';
+}
 
-foreach my $file_hash (keys %same_files) {
-    print join("\n", (@{$same_files{$file_hash}}))."\n\n";
+my %hash_files;
+foreach my $path (@paths) {
+    foreach my $file (map($path.$_, file_list($path))) {
+        my $hash_code = `cat "$file" 2>/dev/null | sha1sum | sed -n -e '2d' -e 's/ .*\$//p'`;
+        push @{$hash_files{$hash_code}}, $file;
+    }
+}
+
+foreach my $file_hash (keys %hash_files) {
+    print join("\n", (@{$hash_files{$file_hash}}))."\n\n" if @{$hash_files{$file_hash}} > 1;
 }
 
 sub file_list {
