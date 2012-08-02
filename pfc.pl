@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Cwd;
 use Getopt::Long;
+use Digest::SHA qw(sha1_hex);
 use 5.010;
 
 my $HASH = 0;
@@ -30,13 +31,19 @@ else {
 my %hash_files;
 foreach my $path (@paths) {
     foreach my $file (map($path.$_, file_list($path))) {
-        my $hash_code = `cat "$file" 2>/dev/null | sha1sum | sed -n -e '2d' -e 's/ .*\$//p'`;
+        open my $FH, $file or next;
+        local $/="";
+        my $file_content = <$FH>;
+        close $FH;
+
+        $file_content = $file_content ? $file_content : "";
+        my $hash_code = sha1_hex($file_content);
         push @{$hash_files{$hash_code}}, $file;
     }
 }
 
 foreach my $file_hash (keys %hash_files) {
-    print "$file_hash" if $HASH && @{$hash_files{$file_hash}} > 1;
+    print "$file_hash\n" if $HASH && @{$hash_files{$file_hash}} > 1;
     print join("\n", (@{$hash_files{$file_hash}}))."\n\n" if @{$hash_files{$file_hash}} > 1;
 }
 
