@@ -1,5 +1,6 @@
 OBJECT := pfc.o
-OBJECT += sha1.o
+OBJECT += filelist.o
+OBJECT += identicalfile.o
 
 ifneq ($(CC), gcc)
 CC := gcc
