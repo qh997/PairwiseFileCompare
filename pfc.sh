@@ -36,9 +36,8 @@ function debug {
     fi
     : ${debug_level:=1}
 
-    local print_time=$(date +%H:%M:%S.%N | sed 's/[[:digit:]]\{6\}$//')
-
     if [ $debug_level -le $DEBUG ]; then
+        local print_time=$(date +%H:%M:%S.%N | sed 's/[[:digit:]]\{6\}$//')
         echo "[DebugMessage $print_time $debug_level] $1"
     fi
 }
