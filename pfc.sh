@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function init {
-    ARGS=$(getopt -o hd --long debug --long hash -n "$0" -- "$@")
+    ARGS=$(getopt -o hd --long debug: --long hash -n "$0" -- "$@")
     if [ $? != 0 ]; then
         exit 1
     fi
