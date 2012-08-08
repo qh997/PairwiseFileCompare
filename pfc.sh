@@ -58,6 +58,16 @@ for path in ${paths[*]}; do
     done
 done
 
+for ((j=1; j<${#files[*]}; j++)); do
+    key=${files[$j]}
+    i=$((j - 1))
+    while ((i > 0)) && [ "${files[$i]}" \> "${key}" ]; do
+        files[$((i + 1))]=${files[$i]};
+        ((i--));
+    done
+    files[$((i + 1))]=$key
+done
+
 debug 1 "file total : ${#files[*]}"
 
 declare -a already_compare
