@@ -18,4 +18,5 @@ pfc: $(OBJECT)
 	@echo
 	@echo 'make pfc'
 	$(CC) $(CFLAGS) $^ -o $@
+	@echo
 

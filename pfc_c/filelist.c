@@ -23,6 +23,30 @@ Status FileList_Push(FileList *list, char *filename)
     return OK;
 }
 
+Status FileList_Insert(FileList *list, char *filename)
+{
+    FileList *pp = list;
+    FileList *p = list->next;
+
+    while (NULL != p)
+    {
+        if (0 < strcmp(p->filename, filename))
+        {
+            break;
+        }
+        pp = p;
+        p = p->next;
+    }
+
+    if (NULL == (pp->next = (FileList *)malloc(sizeof(FileList))))
+        return OVERFLOW;
+
+    strcpy(pp->next->filename, filename);
+    pp->next->next = p;
+
+    return OK;
+}
+
 int FileList_Count(FileList *list)
 {
     int count = 0;
@@ -64,7 +88,7 @@ Status GetFileListInPath(char *dir, FileList *filelist)
                 char file_path[FILENAME_MAX];
                 sprintf(file_path, "%s/%s", dir, entry->d_name);
 
-                FileList_Push(filelist, file_path);
+                FileList_Insert(filelist, file_path);
             }
         }
         chdir("..");

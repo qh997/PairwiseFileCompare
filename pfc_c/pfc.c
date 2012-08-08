@@ -23,9 +23,6 @@ int main(int argc, char **argv)
     FileList_Init(filelist);
     GetFileListInPaths(DIRPATHS, filelist);
 
-    //PrintFileList(filelist);
-    //show_var("%d", FileList_Count(filelist));
-
     IdentFileList *ifiles;
     IdenticalFile_Init(&ifiles);
     GetIdenticalFile(filelist, ifiles);

@@ -76,11 +76,13 @@ bool FileIsIdentical(char *fileL, char *fileR)
 
     unsigned char bufferL[0x0400] = {0};
     unsigned char bufferR[0x0400] = {0};
-    int lenL = 0;
+    int lenL = -1;
+    int lenR = -1;
 
-    while (lenL = fread(bufferL, 1, 1024, fL))
+    while (0 != lenL || 0 != lenR)
     {
-        int lenR = fread(bufferR, 1, 1024, fR);
+        lenL = fread(bufferL, 1, 1024, fL);
+        lenR = fread(bufferR, 1, 1024, fR);
 
         if (lenL != lenR)
         {
@@ -102,6 +104,9 @@ bool FileIsIdentical(char *fileL, char *fileR)
 
     fclose(fL);
     fclose(fR);
+
+    if (lenL != lenR)
+        return FALSE;
 
     //printf("%s == %s\n", fileL, fileR);
 

@@ -23,6 +23,7 @@ typedef struct IdenticalFileNode
 
 Status FileList_Init(FileList *list);
 Status FileList_Push(FileList *list, char *filename);
+Status FileList_Insert(FileList *list, char *filename);
 int FileList_Count(FileList *list);
 Status GetFileListInPath(char *dir, FileList *filelist);
 Status GetFileListInPaths(char **dir, FileList *filelist);
