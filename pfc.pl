@@ -42,9 +42,19 @@ foreach my $path (@paths) {
     }
 }
 
+my %sorted_hash_files;
 foreach my $file_hash (keys %hash_files) {
-    print "$file_hash\n" if $HASH && @{$hash_files{$file_hash}} > 1;
-    print join("\n", (@{$hash_files{$file_hash}}))."\n\n" if @{$hash_files{$file_hash}} > 1;
+    if (@{$hash_files{$file_hash}} > 1) {
+        my @sorted_files = sort @{$hash_files{$file_hash}};
+        @{$sorted_hash_files{$file_hash}} = (@sorted_files);
+    }
+}
+
+my @hash_list = sort { $sorted_hash_files{$a}->[0] cmp $sorted_hash_files{$b}->[0] } keys %sorted_hash_files;
+
+foreach my $hash (@hash_list) {
+    print "$hash\n" if $HASH;
+    print join("\n", (@{$sorted_hash_files{$hash}}))."\n\n";
 }
 
 sub file_list {
