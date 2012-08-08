@@ -31,13 +31,13 @@ else {
 my %hash_files;
 foreach my $path (@paths) {
     foreach my $file (map($path.$_, file_list($path))) {
+        my $sha = Digest::SHA->new();
+
         open my $FH, $file or next;
-        local $/="";
-        my $file_content = <$FH>;
+        $sha->addfile($FH);
+        my $hash_code = $sha->hexdigest;
         close $FH;
 
-        $file_content = $file_content ? $file_content : "";
-        my $hash_code = sha1_hex($file_content);
         push @{$hash_files{$hash_code}}, $file;
     }
 }
