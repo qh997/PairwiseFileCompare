@@ -72,11 +72,10 @@ sub file_list {
         }
 
         foreach (readdir(DH)) {
-            if ($_ eq '.' || $_ eq '..') {
-                next;
-            }
-
             $file = $dir.$_;
+
+            next if ($_ eq '.' || $_ eq '..' || -l $file);
+
             if (-d $file) {
                 $file .= '/';
                 push @dirs, $file ;
