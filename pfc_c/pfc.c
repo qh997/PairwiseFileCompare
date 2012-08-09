@@ -27,7 +27,10 @@ int main(int argc, char **argv)
     IdenticalFile_Init(&ifiles);
     GetIdenticalFile(filelist, ifiles);
 
-    PrintIdenticalFile(ifiles);
+    if (OPTIONS & OPT_HASH)
+        PrintIdenticalFileHash(ifiles);
+    else
+        PrintIdenticalFile(ifiles);
 }
 
 int parse_cmd_line(int argc, char **argv)

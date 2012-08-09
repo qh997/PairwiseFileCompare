@@ -1,5 +1,6 @@
 OBJECT := pfc.o
 OBJECT += filelist.o
+OBJECT += filehash.o
 OBJECT += identicalfile.o
 
 ifneq ($(CC), gcc)

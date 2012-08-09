@@ -123,3 +123,38 @@ void PrintIdenticalFile(IdentFileList *ifiles)
         printf("\n");
     }
 }
+
+void PrintIdenticalFileHash(IdentFileList *ifiles)
+{
+    while (NULL != ifiles->next)
+    {
+        ifiles = ifiles->next;
+
+        char buff[SHA1_SIZE_BYTE] = {'\0'};
+        GetFileSha1(ifiles->filelist->next->filename, buff);
+
+        char sha1_hex[SHA1_SIZE_BYTE * 2] = {'\0'};
+        for (int i = 0; i < SHA1_SIZE_BYTE; i++)
+        {
+            char single[9] = {'\0'};
+            sprintf(single, "%x", buff[i]);
+
+            if(2 < strlen(single))
+            {
+                printf("%c%c", single[6], single[7]);
+            }
+            else if (2 > strlen(single))
+            {
+                printf("0%s", single);
+            }
+            else
+            {
+                printf("%s", single);
+            }
+        }
+        printf("\n");
+
+        PrintFileList(ifiles->filelist);
+        printf("\n");
+    }
+}
