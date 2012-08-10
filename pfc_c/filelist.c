@@ -25,24 +25,16 @@ Status FileList_Push(FileList *list, char *filename)
 
 Status FileList_Insert(FileList *list, char *filename)
 {
-    FileList *pp = list;
-    FileList *p = list->next;
+    while (NULL != list->next && 0 > strcmp(list->next->filename, filename))
+        list = list->next;
 
-    while (NULL != p)
-    {
-        if (0 < strcmp(p->filename, filename))
-        {
-            break;
-        }
-        pp = p;
-        p = p->next;
-    }
-
-    if (NULL == (pp->next = (FileList *)malloc(sizeof(FileList))))
+    FileList *new;
+    if (NULL == (new = (FileList *)malloc(sizeof(FileList))))
         return OVERFLOW;
 
-    strcpy(pp->next->filename, filename);
-    pp->next->next = p;
+    strcpy(new->filename, filename);
+    new->next = list->next;
+    list->next = new;
 
     return OK;
 }
@@ -68,13 +60,13 @@ Status GetFileListInPath(char *dir, FileList *filelist)
         struct dirent *entry;
 
         chdir(dir);
-        while ((entry = readdir(dp)) != NULL)
+        while (NULL != (entry = readdir(dp)))
         {
             struct stat statbuf;
             lstat(entry->d_name, &statbuf);
             if(S_ISDIR(statbuf.st_mode))
             {
-                if(strcmp(".", entry->d_name) == 0 || strcmp("..", entry->d_name) == 0)
+                if(0 == strcmp(".", entry->d_name) || 0 == strcmp("..", entry->d_name))
                     continue;
 
                 char next_dir[FILENAME_MAX] = {'\0'};

@@ -6,9 +6,6 @@
 #include "defs.h"
 
 int parse_cmd_line(int argc, char **argv);
-void remove_last_separator(char *dir);
-void get_all_filelist(char **paths, FileList *filelist);
-bool FileIsIdentical(char *fileL, char *fileR);
 
 #define OPT_HASH (1 << 0)
 

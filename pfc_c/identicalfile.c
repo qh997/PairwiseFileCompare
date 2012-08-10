@@ -31,9 +31,11 @@ Status GetIdenticalFile(FileList *filelist, IdentFileList *ifiles)
     {
         FileList *j = i->next;
         FileList *ifilelist = NULL;
+        FILE *fileL = fopen(i->filename, "rb");
         while (NULL != j)
         {
-            if (FileIsIdentical(i->filename, j->filename))
+            FILE *fileR = fopen(j->filename, "rb");
+            if (FileIsIdentical(fileL, fileR))
             {
                 if (NULL == ifilelist)
                 {
@@ -51,31 +53,27 @@ Status GetIdenticalFile(FileList *filelist, IdentFileList *ifiles)
             {
                 j = j->next;
             }
+
+            fclose(fileR);
+            fseek(fileL, 0, SEEK_SET);
         }
 
         if (NULL != ifilelist)
             IdenticalFile_Push(ifiles, ifilelist);
 
         i = i->next;
+
+        fclose(fileL);
     }
 }
 
-bool FileIsIdentical(char *fileL, char *fileR)
+bool FileIsIdentical(FILE *fL, FILE *fR)
 {
-    FILE *fL = NULL;
-    FILE *fR = NULL;
-
-    if (NULL == (fL = fopen(fileL, "rb")))
+    if (NULL == fL || NULL == fR)
         return FALSE;
 
-    if (NULL == (fR = fopen(fileR, "rb")))
-    {
-        fclose(fL);
-        return FALSE;
-    }
-
-    unsigned char bufferL[0x0400] = {0};
-    unsigned char bufferR[0x0400] = {0};
+    unsigned char bufferL[1024] = {0};
+    unsigned char bufferR[1024] = {0};
     int lenL = -1;
     int lenR = -1;
 
@@ -86,8 +84,6 @@ bool FileIsIdentical(char *fileL, char *fileR)
 
         if (lenL != lenR)
         {
-            fclose(fL);
-            fclose(fR);
             return FALSE;
         }
 
@@ -95,20 +91,13 @@ bool FileIsIdentical(char *fileL, char *fileR)
         {
             if (bufferL[i] != bufferR[i])
             {
-                fclose(fL);
-                fclose(fR);
                 return FALSE;
             }
         }
     }
 
-    fclose(fL);
-    fclose(fR);
-
     if (lenL != lenR)
         return FALSE;
-
-    //printf("%s == %s\n", fileL, fileR);
 
     return TRUE;
 }

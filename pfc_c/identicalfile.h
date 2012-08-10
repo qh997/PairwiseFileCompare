@@ -15,7 +15,7 @@ typedef struct IdentFile
 
 Status IdenticalFile_Init(IdentFileList **ifiles);
 Status GetIdenticalFile(FileList *filelist, IdentFileList *ifiles);
-bool FileIsIdentical(char *fileL, char *fileR);
+bool FileIsIdentical(FILE *fL, FILE *fR);
 void PrintIdenticalFile(IdentFileList *ifiles);
 void PrintIdenticalFileHash(IdentFileList *ifiles);
 
