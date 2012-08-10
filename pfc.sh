@@ -52,8 +52,8 @@ file_count=0
 for path in ${paths[*]}; do
     debug 1 "path = $path"
     filelist=$(find $path -type f)
+
     for file in $filelist; do
-        debug 2 "file = $file"
         files[$((file_count++))]=$file
     done
 done
@@ -70,42 +70,44 @@ done
 
 debug 1 "file total : ${#files[*]}"
 
-declare -a already_compare
-ac_index=0
 for ((i=0; i<${#files[*]}; i++)); do
+    if [ -z ${files[$i]} ]; then
+        continue;
+    fi
     left_file=${files[$i]}
+    debug 1 $left_file
+
     lf_hash=$(cat "$left_file" 2>/dev/null | sha1sum | sed -n -e '2d' -e 's/ .*$//p')
+    lf_size=$(cat "$left_file" 2>/dev/null | wc -c)
 
     frist=
     for ((j=$i+1; j<${#files[*]}; j++)); do
+        if [ -z ${files[$j]} ]; then
+            continue;
+        fi
         right_file=${files[$j]}
-        skip=
-        for alc in ${already_compare[*]}; do
-            if ((alc == j)); then
-                skip=1
-                break
-            fi
-        done
 
-        if [[ -z $skip ]]; then
-            rf_hash=$(cat "$right_file" 2>/dev/null | sha1sum | sed -n -e '2d' -e 's/ .*$//p')
-            debug 3 "$left_file <=> $right_file"
+        rf_size=$(cat "$right_file" 2>/dev/null | wc -c)
+        debug 3 "$left_file <=> $right_file"
 
-            if [[ $lf_hash == $rf_hash ]]; then
-                if [[ -z $frist ]]; then
-                    if [[ -n $HASH ]]; then
-                        echo $lf_hash
-                    fi
+        if ((lf_size != rf_size)); then
+            continue;
+        fi
 
-                    echo $left_file
-                    frist=1
+        rf_hash=$(cat "$right_file" 2>/dev/null | sha1sum | sed -n -e '2d' -e 's/ .*$//p')
+
+        if [[ $lf_hash == $rf_hash ]]; then
+            if [[ -z $frist ]]; then
+                if [[ -n $HASH ]]; then
+                    echo $lf_hash
                 fi
-                echo $right_file
 
-                already_compare[$((ac_index++))]=$j
+                echo $left_file
+                frist=1
             fi
-        else
-            debug 2 "Skip $right_file"
+            echo $right_file
+
+            files[$j]=
         fi
     done
 
